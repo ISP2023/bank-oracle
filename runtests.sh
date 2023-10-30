@@ -13,25 +13,26 @@ actual=("")
 
 # Target and variants
 TARGET=bank_account.py
-GOOD_CODE=oracle/bank_account_bugs.py
-BUG_CODE=oracle/bank_account_bugs.py
+if [ -d oracle ]; then
+   DIR=oracle
+else
+   DIR=.
+fi
+VARIANT_CODE=$DIR/bank_account_bugs.py
 
 drawline( ) {
     echo "----------------------------------------------------------------------"
 }
 runtests( ) {
-    if [ ! -f $GOOD_CODE ]; then
+    if [ ! -f $VARIANT_CODE ]; then
         echo "No file ${GOOD_CODE}"
-        exit 1
-    fi
-    if [ ! -f $BAD_CODE ]; then
-        echo "No file ${BAD_CODE}"
         exit 1
     fi
 	# backup student file
 	if [ ! -f bank_account_orig.py ]; then
 		cp $TARGET bank_account_orig.py
 	fi
+    cp $VARIANT_CODE $TARGET
 	for testcase in 1 2 3 4 5 6 7 8; do
         echo ""
         drawline
@@ -41,12 +42,10 @@ runtests( ) {
     	8)
 			echo "BankAccount #8: All methods work according to specification. Tests should PASS."
 			#/bin/cp $GOOD_CODE $TARGET
-			/bin/cp $BUG_CODE $TARGET
 			expect[8]="OK"
        		;;
     	*)
-			echo "BankAccount #{testcase}: Some defect in code. At least one test should FAIL."
-			/bin/cp $BUG_CODE  $TARGET
+			echo "BankAccount #${testcase}: Some defect in code. At least one test should FAIL."
 			;;
 		esac
         drawline
